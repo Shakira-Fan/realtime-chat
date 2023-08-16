@@ -18,20 +18,16 @@ function Chat({ socket, username, room }) {
       };
       
       await socket.emit("send_message", messageData);
-    //   setMessageList((list) => [...list, messageData]);
-      console.log('onClick');
+      setMessageList((list) => [...list, messageData]);
       setCurrentMessage("");
     }
   };
 
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      setMessageList((list) => [...list, data]);
-      console.log('useEffect');
+        setMessageList([...messageList,data]);
     });
-  },[]);
-
-  console.log(messageList)
+  },[socket,messageList]);
 
   return (
     <div className="chat-window">
@@ -41,10 +37,6 @@ function Chat({ socket, username, room }) {
       <div className="chat-body">
         <ScrollToBottom className="message-container">
           {messageList
-            .filter(
-              (item, index, self) =>
-                index === self.findIndex((t) => t.id === item.id)
-            )
             .map((messageContent, index) => {
               return (
                 <div
@@ -72,7 +64,7 @@ function Chat({ socket, username, room }) {
           value={currentMessage}
           placeholder="Hey..."
           onChange={(event) => {
-            setCurrentMessage(()=>event.target.value);
+            setCurrentMessage(event.target.value);
           }}
           onKeyPress={(event) => {
             event.key === "Enter" && sendMessage();
